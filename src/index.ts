@@ -1,32 +1,55 @@
-/**
- * Welcome to Cloudflare Workers! This is your first worker.
- *
- * - Run `npm run dev` in your terminal to start a development server
- * - Open a browser tab at http://localhost:8787/ to see your worker in action
- * - Run `npm run deploy` to publish your worker
- *
- * Learn more at https://developers.cloudflare.com/workers/
- */
+import GoogleAuth, { GoogleKey } from 'cloudflare-workers-and-google-oauth';
+import { QueryResponse } from './types';
 
 export interface Env {
-	// Example binding to KV. Learn more at https://developers.cloudflare.com/workers/runtime-apis/kv/
-	// MY_KV_NAMESPACE: KVNamespace;
-	//
-	// Example binding to Durable Object. Learn more at https://developers.cloudflare.com/workers/runtime-apis/durable-objects/
-	// MY_DURABLE_OBJECT: DurableObjectNamespace;
-	//
-	// Example binding to R2. Learn more at https://developers.cloudflare.com/workers/runtime-apis/r2/
-	// MY_BUCKET: R2Bucket;
-	//
-	// Example binding to a Service. Learn more at https://developers.cloudflare.com/workers/runtime-apis/service-bindings/
-	// MY_SERVICE: Fetcher;
-	//
-	// Example binding to a Queue. Learn more at https://developers.cloudflare.com/queues/javascript-apis/
-	// MY_QUEUE: Queue;
+	GCP_SERVICE_ACCOUNT: string;
+	ACCESS_TOKEN: KVNamespace;
 }
+
+const projectId = 'shopify-322306';
+const queryEndpoint = `https://bigquery.googleapis.com/bigquery/v2/projects/${projectId}/queries`;
 
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
-		return new Response('Hello World!');
+		let token = await env.ACCESS_TOKEN.get('token');
+		if (!token) {
+			console.log('Fetching token');
+			const scopes: string[] = ['https://www.googleapis.com/auth/bigquery'];
+			const googleAuth: GoogleKey = JSON.parse(env.GCP_SERVICE_ACCOUNT);
+
+			const oauth = new GoogleAuth(googleAuth, scopes);
+			token = (await oauth.getGoogleAuthToken()) ?? null;
+			if (!token) return new Response('Failed to get token', { status: 500 });
+
+			ctx.waitUntil(env.ACCESS_TOKEN.put('token', token, { expirationTtl: 60 * 60 }));
+		}
+
+		const datasetId = 'shopify';
+		const tableId = 'orders';
+
+		const query = {
+			query: `SELECT * FROM \`${datasetId}.${tableId}\` LIMIT 10`,
+			useLegacySql: false,
+		};
+
+		const res = await fetch(queryEndpoint, {
+			method: 'POST',
+			headers: {
+				Authorization: `Bearer ${token}`,
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(query),
+		});
+		if (!res.ok) return new Response('Failed to fetch data', { status: 500 });
+
+		const data: QueryResponse = await res.json();
+		const rows = data.rows.map((row) => {
+			return row.f.reduce<Record<string, unknown>>((acc, field, index) => {
+				acc[data.schema.fields[index].name] = field.v;
+				return acc;
+			}, {});
+		});
+
+		return new Response(JSON.stringify(rows), { headers: { 'content-type': 'application/json' } });
 	},
 };
