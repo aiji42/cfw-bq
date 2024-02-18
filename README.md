@@ -55,27 +55,27 @@ This library is based on [BigQuery REST API v2](https://cloud.google.com/bigquer
 - REST Resource: v2.datasets
   - [x] delete (⚠️ experimental) `new BigQuery().dataset('your-dataset').delete`
   - [x] get (⚠️ experimental) `new BigQuery().dataset('your-dataset').get`
-  - [] insert
+  - [ ] insert
   - [x] list (⚠️ experimental) `new BigQuery().dataset().list`
-  - [] patch
-  - [] update
+  - [ ] patch
+  - [ ] update
 - REST Resource: v2.jobs
-  - [] cancel
-  - [] delete
-  - [] get
-  - [] getQueryResults
-  - [] insert
-  - [] list
+  - [ ] cancel
+  - [ ] delete
+  - [ ] get
+  - [ ] getQueryResults
+  - [ ] insert
+  - [ ] list
   - [x] query `new BigQuery().query('your-query')`
 - REST Resource: v2.tables
 	- [x] delete (⚠️ experimental) `new BigQuery().dataset('your-dataset').table('your-table').delete`
 	- [x] get (⚠️ experimental) `new BigQuery().dataset('your-dataset').table('your-table').get`
-	- [] insert
+	- [ ] insert
 	- [x] list (⚠️ experimental) `new BigQuery().dataset('your-dataset').table().list`
-	- [] patch
-	- [] update
+	- [ ] patch
+	- [ ] update
 - REST Resource: v2.tabledata
-	- [] insertAll
+	- [ ] insertAll
 	- [x] list (⚠️ experimental) `new BigQuery().dataset('your-dataset').table('your-table').tableData().list`
 - REST Resource: v2.models
   - yet to be implemented
