@@ -51,7 +51,6 @@ export default {
 ## API Coverage
 
 This library is based on [BigQuery REST API v2](https://cloud.google.com/bigquery/docs/reference/rest). It currently supports the following methods:
-(⚠️: means experimental)
 
 - REST Resource: v2.datasets
   - [x] ⚠️ delete `new BigQuery().dataset('your-dataset').delete`
@@ -86,5 +85,7 @@ This library is based on [BigQuery REST API v2](https://cloud.google.com/bigquer
 	- yet to be implemented
 - REST Resource: v2.rowAccessPolicies
 	- yet to be implemented
+
+(⚠️: means experimental)
 
 We look forward to your contributions to complete the API coverage.
