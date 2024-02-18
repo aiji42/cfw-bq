@@ -51,12 +51,13 @@ export default {
 ## API Coverage
 
 This library is based on [BigQuery REST API v2](https://cloud.google.com/bigquery/docs/reference/rest). It currently supports the following methods:
+(⚠️: means experimental)
 
 - REST Resource: v2.datasets
-  - [x] delete (⚠️ experimental) `new BigQuery().dataset('your-dataset').delete`
-  - [x] get (⚠️ experimental) `new BigQuery().dataset('your-dataset').get`
+  - [x] ⚠️ delete `new BigQuery().dataset('your-dataset').delete`
+  - [x] ⚠️ get `new BigQuery().dataset('your-dataset').get`
   - [ ] insert
-  - [x] list (⚠️ experimental) `new BigQuery().dataset().list`
+  - [x] ⚠️ list `new BigQuery().dataset().list`
   - [ ] patch
   - [ ] update
 - REST Resource: v2.jobs
@@ -68,15 +69,15 @@ This library is based on [BigQuery REST API v2](https://cloud.google.com/bigquer
   - [ ] list
   - [x] query `new BigQuery().query('your-query')`
 - REST Resource: v2.tables
-	- [x] delete (⚠️ experimental) `new BigQuery().dataset('your-dataset').table('your-table').delete`
-	- [x] get (⚠️ experimental) `new BigQuery().dataset('your-dataset').table('your-table').get`
+	- [x] ⚠️ delete `new BigQuery().dataset('your-dataset').table('your-table').delete`
+	- [x] ⚠️ get `new BigQuery().dataset('your-dataset').table('your-table').get`
 	- [ ] insert
-	- [x] list (⚠️ experimental) `new BigQuery().dataset('your-dataset').table().list`
+	- [x] ⚠️ list `new BigQuery().dataset('your-dataset').table().list`
 	- [ ] patch
 	- [ ] update
 - REST Resource: v2.tabledata
 	- [ ] insertAll
-	- [x] list (⚠️ experimental) `new BigQuery().dataset('your-dataset').table('your-table').tableData().list`
+	- [x] ⚠️ list `new BigQuery().dataset('your-dataset').table('your-table').tableData().list`
 - REST Resource: v2.models
   - yet to be implemented
 - REST Resource: v2.projects
