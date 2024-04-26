@@ -14,14 +14,14 @@ You need to provide the service account credentials as a secret in Cloudflare Wo
 
 ```json
 {
-	"type": "service_account",
-	"project_id": "your-project",
-	"private_key_id": "your-private-key-id",
-	"private_key": "-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n",
-	"client_email": "your-service-account-email",
-	"client_id": "your-client-id",
-	"auth_uri": "https://accounts.google.com/o/oauth2/auth",
-	"token_uri": "https://oauth2.googleapis.com/token"
+  "type": "service_account",
+  "project_id": "your-project",
+  "private_key_id": "your-private-key-id",
+  "private_key": "-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n",
+  "client_email": "your-service-account-email",
+  "client_id": "your-client-id",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token"
 }
 ```
 
@@ -40,19 +40,19 @@ The secret name `MY_CREDENTIALS` is just an example. You can use any name you li
 import { BigQuery } from 'cfw-bq';
 
 export interface Env {
-	MY_CREDENTIALS: string;
+  MY_CREDENTIALS: string;
 }
 
 const project = '{your-project-id}';
 
 export default {
-	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
-		const bq = new BigQuery(JSON.parse(env.MY_CREDENTIALS), project);
-		const query = 'SELECT * FROM `your-project.your-dataset.your-table` LIMIT 10';
-		const result = await bq.query(query);
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+    const bq = new BigQuery(JSON.parse(env.MY_CREDENTIALS), project);
+    const query = 'SELECT * FROM `your-project.your-dataset.your-table` LIMIT 10';
+    const result = await bq.query(query);
 
-		return Response.json(result);
-	}
+    return Response.json(result);
+  }
 };
 ```
 
@@ -62,8 +62,8 @@ You can specify the schema of the result by providing a generic type argument to
 
 ```ts
 interface Row {
-	id: number;
-	name: string;
+  id: number;
+  name: string;
 }
 
 const result = await bq.query<Row>(query);
