@@ -1,6 +1,5 @@
 import GoogleAuth, { GoogleKey } from 'cloudflare-workers-and-google-oauth';
 
-// TODO: enable to specify scopes
 const scopes: string[] = ['https://www.googleapis.com/auth/bigquery'];
 
 type ErrorResponseBody = {
@@ -12,26 +11,27 @@ type ErrorResponseBody = {
 };
 
 export class Client {
-	private readonly accessTokenPromise: string | Promise<string | undefined>;
-	googleKey: GoogleKey;
-	projectId: string;
+	private readonly tokenPromise: Promise<string | undefined>;
+	readonly projectId: string;
 
-	constructor(googleKey: GoogleKey, projectId: string) {
-		this.accessTokenPromise = new GoogleAuth(googleKey, scopes).getGoogleAuthToken();
-		this.googleKey = googleKey;
+	/**
+	 * @param {GoogleKey} gCredentials - JSON parsed Google application credentials.
+	 * @param {string} projectId - The project ID of the Google Cloud project.
+	 */
+	constructor(gCredentials: GoogleKey, projectId: string) {
+		this.tokenPromise = new GoogleAuth(gCredentials, scopes).getGoogleAuthToken();
 		this.projectId = projectId;
 	}
 
-	// TODO: use KV to store the token
-	private async accessToken(): Promise<string> {
-		const token = await this.accessTokenPromise;
+	private async token(): Promise<string> {
+		const token = await this.tokenPromise;
 		if (!token) throw new Error('Failed to get token');
 		return token;
 	}
 
-	protected async request(url: string | URL, method: 'GET' | 'POST' | 'DELETE' | 'PATCH', data?: Record<string, unknown>): Promise<any> {
+	protected async request<T>(url: string | URL, method: 'GET' | 'POST' | 'DELETE' | 'PATCH', data?: Record<string, unknown>): Promise<T> {
 		const headers = new Headers({
-			Authorization: `Bearer ${await this.accessToken()}`,
+			Authorization: `Bearer ${await this.token()}`,
 			'Content-Type': 'application/json',
 		});
 

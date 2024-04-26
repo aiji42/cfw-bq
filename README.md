@@ -5,16 +5,12 @@ This is a BigQuery client library for Cloudflare Workers. It allows you to query
 ## Installation
 
 ```sh
-npm install bg-cf-worker
+npm install cfw-bq
 ```
 
 ## Configuration
 
-You need to create a service account key in the Google Cloud Console and store it as a secret in Cloudflare Workers.
-
-```sh
-wrangler secret put GCP_SERVICE_ACCOUNT --env production
-```
+You need to provide the service account credentials as a secret in Cloudflare Workers.
 
 ```json
 {
@@ -29,63 +25,51 @@ wrangler secret put GCP_SERVICE_ACCOUNT --env production
 }
 ```
 
+Set the secret in Cloudflare Workers:
+
+```sh
+wrangler secret put MY_CREDENTIALS
+```
+
+The secret name `MY_CREDENTIALS` is just an example. You can use any name you like.
+
+
 ## Usage
 
 ```ts
-import { BigQuery } from 'bg-cf-worker';
+import { BigQuery } from 'cfw-bq';
 
 export interface Env {
-	GCP_SERVICE_ACCOUNT: string;
+	MY_CREDENTIALS: string;
 }
+
+const project = '{your-project-id}';
 
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
-		const bq = new BigQuery(JSON.parse(env.GCP_SERVICE_ACCOUNT), projectId);
+		const bq = new BigQuery(JSON.parse(env.MY_CREDENTIALS), project);
 		const query = 'SELECT * FROM `your-project.your-dataset.your-table` LIMIT 10';
 		const result = await bq.query(query);
-		return new Response(JSON.stringify(result), { status: 200 });
+
+		return Response.json(result);
 	}
 };
 ```
 
-## API Coverage
+### for TypeScript
 
-This library is based on [BigQuery REST API v2](https://cloud.google.com/bigquery/docs/reference/rest). It currently supports the following methods:
+You can specify the schema of the result by providing a generic type argument to the `query` method.
 
-- REST Resource: v2.datasets
-  - [x] ⚠️ delete `new BigQuery().dataset('your-dataset').delete`
-  - [x] ⚠️ get `new BigQuery().dataset('your-dataset').get`
-  - [ ] insert
-  - [x] ⚠️ list `new BigQuery().dataset().list`
-  - [ ] patch
-  - [ ] update
-- REST Resource: v2.jobs
-  - [ ] cancel
-  - [ ] delete
-  - [ ] get
-  - [ ] getQueryResults
-  - [ ] insert
-  - [ ] list
-  - [x] query `new BigQuery().query('your-query')`
-- REST Resource: v2.tables
-	- [x] ⚠️ delete `new BigQuery().dataset('your-dataset').table('your-table').delete`
-	- [x] ⚠️ get `new BigQuery().dataset('your-dataset').table('your-table').get`
-	- [ ] insert
-	- [x] ⚠️ list `new BigQuery().dataset('your-dataset').table().list`
-	- [ ] patch
-	- [ ] update
-- REST Resource: v2.tabledata
-	- [ ] insertAll
-	- [x] ⚠️ list `new BigQuery().dataset('your-dataset').table('your-table').tableData().list`
-- REST Resource: v2.models
-  - yet to be implemented
-- REST Resource: v2.projects
-	- yet to be implemented
-- REST Resource: v2.routines
-	- yet to be implemented
-- REST Resource: v2.rowAccessPolicies
-	- yet to be implemented
+```ts
+interface Row {
+	id: number;
+	name: string;
+}
 
-(⚠️: means experimental)
+const result = await bq.query<Row>(query);
+// result is of type Row[]
+```
 
-We look forward to your contributions to complete the API coverage.
+## License
+
+MIT (see: [LICENSE](LICENSE))

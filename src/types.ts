@@ -3,7 +3,7 @@ export interface QueryResponse {
 	schema: Schema;
 	jobReference: JobReference;
 	totalRows: string;
-	rows: Row[];
+	rows?: Row[];
 	totalBytesProcessed: string;
 	jobComplete: boolean;
 	cacheHit: boolean;
@@ -11,30 +11,61 @@ export interface QueryResponse {
 	jobCreationReason: JobCreationReason;
 }
 
-interface Schema {
+export interface Schema {
 	fields: Field[];
 }
 
-interface Field {
-	name: string;
-	type: string;
-	mode: string;
-}
+export type FieldMode = 'NULLABLE' | 'REQUIRED' | 'REPEATED';
 
-interface JobReference {
+export type Field =
+	| {
+			name: string;
+			type:
+				| 'STRING'
+				| 'BYTES'
+				| 'INTEGER'
+				| 'INT64'
+				| 'FLOAT'
+				| 'FLOAT64'
+				| 'BOOLEAN'
+				| 'BOOL'
+				| 'TIMESTAMP'
+				| 'DATE'
+				| 'TIME'
+				| 'DATETIME'
+				| 'GEOGRAPHY'
+				| 'NUMERIC'
+				| 'BIGNUMERIC'
+				| 'JSON';
+			mode: FieldMode;
+	  }
+	| {
+			name: string;
+			type: 'RANGE';
+			mode: FieldMode;
+			rangeElementType: { type: 'DATETIME' | 'DATE' | 'TIMESTAMP' };
+	  }
+	| {
+			name: string;
+			type: 'RECORD' | 'STRUCT';
+			mode: FieldMode;
+			fields: Field[];
+	  };
+
+export interface JobReference {
 	projectId: string;
 	jobId: string;
 	location: string;
 }
 
-interface Row {
+export interface Row {
 	f: FieldValue[];
 }
 
-interface FieldValue {
+export interface FieldValue {
 	v: string | null;
 }
 
-interface JobCreationReason {
+export interface JobCreationReason {
 	code: string;
 }
